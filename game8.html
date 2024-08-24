@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Click the Button Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: #f0f0f0;
+        }
+        .game-container {
+            position: relative;
+            width: 80vw;
+            height: 60vh;
+            max-width: 600px;
+            max-height: 400px;
+            background: #fff;
+            border: 2px solid #000;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            text-align: center;
+        }
+        .game-info {
+            margin-bottom: 20px;
+        }
+        .game-info span {
+            font-size: 24px;
+        }
+        .click-button {
+            position: absolute;
+            padding: 15px 30px;
+            font-size: 18px;
+            background: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .click-button:hover {
+            background: #45a049;
+        }
+        .game-over {
+            display: none;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .game-over button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            background: #e74c3c;
+            color: #fff;
+            cursor: pointer;
+        }
+        .game-over button:hover {
+            background: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-info">
+            <div>Time Left: <span id="time">30</span> seconds</div>
+            <div>Score: <span id="score">0</span></div>
+        </div>
+        <button class="click-button" id="clickButton">Click Me!</button>
+    </div>
+    <div class="game-over" id="gameOver">
+        <h1>Game Over</h1>
+        <p>Your Score: <span id="finalScore">0</span></p>
+        <button onclick="startNewGame()">Play Again</button>
+    </div>
+
+    <script>
+        const button = document.getElementById('clickButton');
+        const timeDisplay = document.getElementById('time');
+        const scoreDisplay = document.getElementById('score');
+        const gameOver = document.getElementById('gameOver');
+        const finalScore = document.getElementById('finalScore');
+        let score = 0;
+        let timeLeft = 30;
+        let gameInterval;
+        let clickButtonInterval;
+        let gameActive = false;
+
+        function getRandomPosition() {
+            const container = document.querySelector('.game-container');
+            const buttonRect = button.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+
+            const x = Math.random() * (containerRect.width - buttonRect.width);
+            const y = Math.random() * (containerRect.height - buttonRect.height);
+
+            return { x, y };
+        }
+
+        function moveButton() {
+            const { x, y } = getRandomPosition();
+            button.style.left = `${x}px`;
+            button.style.top = `${y}px`;
+        }
+
+        function startGame() {
+            score = 0;
+            timeLeft = 30;
+            gameActive = true;
+            scoreDisplay.textContent = score;
+            timeDisplay.textContent = timeLeft;
+            gameOver.style.display = 'none';
+
+            gameInterval = setInterval(() => {
+                timeLeft--;
+                timeDisplay.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+
+            clickButtonInterval = setInterval(moveButton, 1000);
+        }
+
+        function endGame() {
+            clearInterval(gameInterval);
+            clearInterval(clickButtonInterval);
+            gameActive = false;
+            finalScore.textContent = score;
+            gameOver.style.display = 'block';
+        }
+
+        function startNewGame() {
+            startGame();
+        }
+
+        button.addEventListener('click', () => {
+            if (gameActive) {
+                score++;
+                scoreDisplay.textContent = score;
+                moveButton();
+            }
+        });
+
+        // Start the game on page load
+        startNewGame();
+    </script>
+</body>
+</html>
